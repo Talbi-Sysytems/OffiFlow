@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Retail Pro | SkyFlow</title>
+<title>OffiFlow V1_326</title>
 <style>
 * {
   margin: 0;
@@ -235,7 +235,7 @@ hr {
 <div class="container">
   <!-- LOGIN PAGE -->
   <div id="loginPage" class="card">
-    <h2><i>🛡️</i> Staff Login</h2>
+    <h2><i>🛡️</i> Login</h2>
     <input id="staffNumber" type="text" placeholder="Staff Number" autocomplete="off">
     <input id="password" type="password" placeholder="Password">
     <button onclick="login()">Login</button>
@@ -246,7 +246,7 @@ hr {
   <div id="menuPage" class="card hidden">
     <h2><i>📋</i> Menu</h2>
     <button class="menu-btn" onclick="showInventory()">📦 Inventory Management</button>
-    <button class="menu-btn" onclick="showBalance()">⚖️ Balance / Audit</button>
+    <button class="menu-btn" onclick="showBalance()">⚖️ Balance</button>
     <button class="menu-btn" onclick="logout()">🚪 Logout</button>
   </div>
 
@@ -265,7 +265,7 @@ hr {
       <button onclick="setMode('COUNT')" id="btnCOUNT">⚖️ COUNT</button>
     </div>
     
-    <button onclick="sendData()">✨ SEND</button>
+    <button onclick="sendData()"> ⏩ SEND</button>
     <button class="back-btn" onclick="backToMenu()">⬅️ Back to Menu</button>
     <div id="status"></div>
   </div>
