@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Retail Pro | SkyFlow</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, 'Inter', 'Helvetica Neue', sans-serif;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdef5 100%);
+  min-height: 100vh;
+  padding: 24px 16px;
+  color: #02457a;
+}
+
+/* Main container */
+.container {
+  max-width: 550px;
+  margin: 0 auto;
+}
+
+/* Card style for all pages */
+.card {
+  background: #ffffff;
+  border-radius: 40px;
+  box-shadow: 0 20px 40px -12px rgba(0, 100, 150, 0.25), 0 2px 6px rgba(0,0,0,0.02);
+  padding: 28px 22px 32px;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(100, 180, 250, 0.3);
+}
+
+h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-align: center;
+  background: linear-gradient(135deg, #0284c7, #3b82f6);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+h2 i {
+  font-style: normal;
+  font-size: 32px;
+  background: none;
+  -webkit-background-clip: unset;
+  color: #2c7be5;
+}
+
+/* Input fields */
+input, button {
+  width: 100%;
+  padding: 14px 18px;
+  margin: 8px 0;
+  border-radius: 60px;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+input {
+  background: #f9fdff;
+  border: 1.5px solid #cde5fc;
+  color: #035c8f;
+}
+
+input:focus {
+  outline: none;
+  border-color: #3b9eff;
+  box-shadow: 0 0 0 3px rgba(59, 158, 255, 0.2);
+  background: white;
+}
+
+input::placeholder {
+  color: #9bbad2;
+  font-weight: 400;
+}
+
+button {
+  background: linear-gradient(95deg, #2b87e0, #1c6fb8);
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(27, 100, 160, 0.25);
+  border: none;
+}
+
+button:active {
+  transform: scale(0.97);
+  transition: transform 0.05s;
+}
+
+/* Menu buttons specific */
+.menu-btn {
+  background: #eef5fc;
+  color: #1c6fb0;
+  box-shadow: none;
+  border: 1px solid #cde0f0;
+  margin: 10px 0;
+  font-size: 18px;
+}
+
+.menu-btn:active {
+  background: #e0edf8;
+}
+
+/* Mode buttons row */
+.mode-row {
+  display: flex;
+  gap: 12px;
+  margin: 12px 0 8px;
+}
+
+.mode-row button {
+  flex: 1;
+  background: #eef3fa;
+  color: #2c6b9e;
+  box-shadow: none;
+  border: 1px solid #caddf0;
+  margin: 0;
+  padding: 12px 8px;
+}
+
+.mode-row button.active {
+  background: #2b87e0;
+  color: white;
+  border-color: #2b87e0;
+  box-shadow: 0 4px 10px rgba(43, 135, 224, 0.3);
+}
+
+/* Scanner containers */
+#scanner, #balanceScanner {
+  width: 100%;
+  height: 250px;
+  display: none;
+  border-radius: 24px;
+  overflow: hidden;
+  margin: 12px 0;
+  border: 2px solid #7bb9ff;
+  background: #f0f8ff;
+}
+
+/* Status & result messages */
+#status, #loginStatus {
+  margin-top: 16px;
+  padding: 10px 16px;
+  border-radius: 60px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  background: #e9f3fe;
+  color: #0369a1;
+}
+
+#balanceResult {
+  margin-top: 16px;
+  background: #eff7ff;
+  padding: 14px 18px;
+  border-radius: 28px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #02457a;
+  line-height: 1.5;
+  border-left: 4px solid #3b9eff;
+  word-break: break-word;
+}
+
+/* Utility classes */
+.hidden {
+  display: none;
+}
+
+/* Back button style */
+.back-btn {
+  background: #eef2f7;
+  color: #3c6e9e;
+  box-shadow: none;
+  border: 1px solid #cde0f0;
+  margin-top: 16px;
+}
+
+/* Action button group */
+.action-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.action-group button {
+  flex: 1;
+}
+
+/* Small adjustments */
+@media (max-width: 480px) {
+  .card {
+    padding: 22px 18px;
+  }
+  .mode-row button {
+    font-size: 14px;
+    padding: 10px 6px;
+  }
+  button, input {
+    font-size: 15px;
+  }
+}
+
+/* Login specific */
+#loginPage h2 i, #menuPage h2 i {
+  font-style: normal;
+}
+
+/* Extra polish */
+hr {
+  margin: 20px 0;
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, #cfe3ff, #8fc3ff, #cfe3ff);
+}
+
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- LOGIN PAGE -->
+  <div id="loginPage" class="card">
+    <h2><i>🛡️</i> Staff Login</h2>
+    <input id="staffNumber" type="text" placeholder="Staff Number" autocomplete="off">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <div id="loginStatus"></div>
+  </div>
+
+  <!-- MENU PAGE -->
+  <div id="menuPage" class="card hidden">
+    <h2><i>📋</i> Menu</h2>
+    <button class="menu-btn" onclick="showInventory()">📦 Inventory Management</button>
+    <button class="menu-btn" onclick="showBalance()">⚖️ Balance / Audit</button>
+    <button class="menu-btn" onclick="logout()">🚪 Logout</button>
+  </div>
+
+  <!-- INVENTORY PAGE -->
+  <div id="inventoryPage" class="card hidden">
+    <h2><i>📦</i> Inventory</h2>
+    <button onclick="startScanner()" style="margin-bottom: 8px;">📷 Scan Barcode</button>
+    <div id="scanner"></div>
+    <input id="barcode" placeholder="🔖 Barcode">
+    <input id="name" placeholder="🏷️ Product name">
+    <input id="qty" type="number" value="1" placeholder="🔢 Quantity">
+    
+    <div class="mode-row">
+      <button onclick="setMode('IN')" id="btnIN">➕ IN</button>
+      <button onclick="setMode('OUT')" id="btnOUT">➖ OUT</button>
+      <button onclick="setMode('COUNT')" id="btnCOUNT">⚖️ COUNT</button>
+    </div>
+    
+    <button onclick="sendData()">✨ SEND</button>
+    <button class="back-btn" onclick="backToMenu()">⬅️ Back to Menu</button>
+    <div id="status"></div>
+  </div>
+
+  <!-- BALANCE PAGE -->
+  <div id="balancePage" class="card hidden">
+    <h2><i>⚖️</i> Balance / Audit</h2>
+    <button onclick="startBalanceScanner()">📷 Scan Barcode</button>
+    <div id="balanceScanner"></div>
+    <input id="balanceBarcode" placeholder="🔖 Scan or type barcode">
+    <input id="realQty" type="number" placeholder="📊 Counted quantity">
+    
+    <div class="action-group">
+      <button onclick="checkBalance()">🔍 Check</button>
+      <button onclick="applyCorrection()">🛠️ Fix Stock</button>
+    </div>
+    <button class="back-btn" onclick="backToMenu()">⬅️ Back to Menu</button>
+    <div id="balanceResult"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script>
+// ==================== ORIGINAL LOGIC FULLY PRESERVED ====================
+// Google Apps Script Web App URL
+const API_URL = "https://script.google.com/macros/s/AKfycbxGYA3o4OHKbFbiNcmhRSEohcWgiELtWl2sl5pzCotok2zeQNDS2a8SnW9haUN30FaN/exec"; 
+
+let currentMode = "IN";
+let scanner;
+let balanceScanner;
+
+// DEFAULT TEST LOGIN (can remove later)
+const STAFF = [
+  { staffNumber: "123", password: "123" }
+];
+
+// LOGIN / LOGOUT
+function login(){
+  const sn = document.getElementById("staffNumber").value.trim();
+  const pw = document.getElementById("password").value.trim();
+  if(STAFF.some(s=>s.staffNumber===sn && s.password===pw)){
+    document.getElementById("loginPage").classList.add("hidden");
+    document.getElementById("menuPage").classList.remove("hidden");
+    document.getElementById("loginStatus").innerText = "";
+    // clear fields
+    document.getElementById("staffNumber").value = "";
+    document.getElementById("password").value = "";
+  } else {
+    document.getElementById("loginStatus").innerText = "❌ Invalid staff number or password";
+  }
+}
+function logout(){
+  document.getElementById("menuPage").classList.add("hidden");
+  document.getElementById("loginPage").classList.remove("hidden");
+  document.getElementById("staffNumber").value = "";
+  document.getElementById("password").value = "";
+}
+
+// PAGE NAVIGATION
+function showInventory(){ 
+  document.getElementById("menuPage").classList.add("hidden"); 
+  document.getElementById("inventoryPage").classList.remove("hidden");
+  // reset any active scanner display
+  document.getElementById("scanner").style.display = "none";
+}
+function showBalance(){ 
+  document.getElementById("menuPage").classList.add("hidden"); 
+  document.getElementById("balancePage").classList.remove("hidden");
+  document.getElementById("balanceScanner").style.display = "none";
+}
+function backToMenu(){ 
+  document.getElementById("inventoryPage").classList.add("hidden"); 
+  document.getElementById("balancePage").classList.add("hidden"); 
+  document.getElementById("menuPage").classList.remove("hidden");
+  // stop any running scanners to avoid background issues
+  if(scanner) { scanner.stop().catch(()=>{}); scanner = null; }
+  if(balanceScanner) { balanceScanner.stop().catch(()=>{}); balanceScanner = null; }
+}
+
+// INVENTORY SCANNER
+function startScanner(){
+  const scannerDiv = document.getElementById("scanner");
+  scannerDiv.style.display = "block";
+  if(scanner) {
+    scanner.stop().catch(()=>{});
+  }
+  scanner = new Html5Qrcode("scanner");
+  scanner.start(
+    { facingMode: "environment" },
+    { fps:10, qrbox:220 },
+    (code)=>{
+      document.getElementById("barcode").value = code;
+      document.getElementById("balanceBarcode").value = code;
+      let beep = new Audio("https://www.soundjay.com/buttons/beep-07.mp3"); 
+      beep.play().catch(e=>console.log("beep blocked"));
+      stopScanner();
+    },
+    (err)=>{ console.warn(err); }
+  ).catch(err=>{
+    console.error("Camera error", err);
+    document.getElementById("status").innerText = "⚠️ Camera access error";
+    stopScanner();
+  });
+}
+function stopScanner(){
+  if(scanner){
+    scanner.stop().then(()=>{ document.getElementById("scanner").style.display="none"; }).catch(()=>{});
+    scanner = null;
+  } else {
+    document.getElementById("scanner").style.display="none";
+  }
+}
+
+// BALANCE SCANNER
+function startBalanceScanner(){
+  const scannerDiv = document.getElementById("balanceScanner");
+  scannerDiv.style.display = "block";
+  if(balanceScanner) {
+    balanceScanner.stop().catch(()=>{});
+  }
+  balanceScanner = new Html5Qrcode("balanceScanner");
+  balanceScanner.start(
+    { facingMode: "environment" },
+    { fps:10, qrbox:220 },
+    (code)=>{
+      document.getElementById("balanceBarcode").value = code;
+      let beep = new Audio("https://www.soundjay.com/buttons/beep-07.mp3"); 
+      beep.play().catch(e=>console.log("beep blocked"));
+      stopBalanceScanner();
+    },
+    (err)=>{ console.warn(err); }
+  ).catch(err=>{
+    console.error("Balance camera error", err);
+    document.getElementById("balanceResult").innerHTML = "⚠️ Camera access failed";
+    stopBalanceScanner();
+  });
+}
+function stopBalanceScanner(){
+  if(balanceScanner){
+    balanceScanner.stop().then(()=>{ document.getElementById("balanceScanner").style.display="none"; }).catch(()=>{});
+    balanceScanner = null;
+  } else {
+    document.getElementById("balanceScanner").style.display="none";
+  }
+}
+
+// INVENTORY FUNCTIONS (fully original)
+function setMode(mode){ 
+  currentMode = mode; 
+  // UI active highlight
+  document.getElementById("btnIN").classList.remove("active");
+  document.getElementById("btnOUT").classList.remove("active");
+  document.getElementById("btnCOUNT").classList.remove("active");
+  if(mode === "IN") document.getElementById("btnIN").classList.add("active");
+  if(mode === "OUT") document.getElementById("btnOUT").classList.add("active");
+  if(mode === "COUNT") document.getElementById("btnCOUNT").classList.add("active");
+}
+function sendData(){
+  const barcode = document.getElementById("barcode").value;
+  const name = document.getElementById("name").value;
+  const quantity = document.getElementById("qty").value;
+  if(!barcode.trim()) {
+    document.getElementById("status").innerText = "⚠️ Please enter or scan barcode";
+    return;
+  }
+  fetch(API_URL,{ 
+    method:"POST", 
+    body:JSON.stringify({barcode,name,quantity,action:currentMode}) 
+  })
+  .then(res => res.json())
+  .then(()=> { 
+    document.getElementById("status").innerText = "✅ "+currentMode+" saved!";
+    // optional: keep barcode but clear name for fast flow
+    if(currentMode !== "COUNT") document.getElementById("name").value = "";
+    document.getElementById("barcode").value = "";
+    setTimeout(()=>{
+      if(document.getElementById("status").innerText.includes("saved"))
+        document.getElementById("status").innerText = "";
+    }, 2500);
+  })
+  .catch(()=> {
+    document.getElementById("status").innerText = "❌ Server error";
+  });
+}
+
+// BALANCE / AUDIT FUNCTIONS (fully original logic, enhanced UX display)
+function checkBalance(){
+  const barcode = document.getElementById("balanceBarcode").value;
+  const realQty = parseInt(document.getElementById("realQty").value||0);
+  if(!barcode.trim()) {
+    document.getElementById("balanceResult").innerHTML = "❌ Please enter a barcode";
+    return;
+  }
+  fetch(API_URL+"?barcode="+encodeURIComponent(barcode))
+  .then(res=>res.json())
+  .then(data=>{
+    if(!data.found){ 
+      document.getElementById("balanceResult").innerHTML = "❌ Product not found in system"; 
+      return; 
+    }
+    const systemQty = data.quantity;
+    const diff = realQty - systemQty;
+    let msg = `📦 <strong>${data.name || "Product"}</strong><br> 🧾 System: <strong>${systemQty}</strong><br> 🔎 Counted: <strong>${realQty}</strong><br> 📉 Difference: <strong style="color:${diff!==0 ? '#006994' : '#2c7a47'}">${diff>0 ? '+' : ''}${diff}</strong>`;
+    if(diff<0) msg+="<br> ⚠️ LOSS (missing stock)";
+    if(diff>0) msg+="<br> 🟢 EXTRA (surplus)";
+    if(diff===0) msg+="<br> ✅ PERFECT MATCH";
+    document.getElementById("balanceResult").innerHTML = msg;
+  })
+  .catch(()=>{
+    document.getElementById("balanceResult").innerHTML = "❌ Failed to fetch stock data. Check API.";
+  });
+}
+function applyCorrection(){
+  const barcode = document.getElementById("balanceBarcode").value;
+  const realQty = document.getElementById("realQty").value;
+  if(!barcode.trim()) {
+    alert("❌ Please enter barcode");
+    return;
+  }
+  if(realQty === "" || realQty === null) {
+    alert("⚠️ Enter counted quantity first");
+    return;
+  }
+  fetch(API_URL,{ 
+    method:"POST", 
+    body:JSON.stringify({barcode,quantity:realQty,action:"COUNT"}) 
+  })
+  .then(res => res.json())
+  .then(()=>{
+    alert("✅ Stock corrected to " + realQty + " units");
+    document.getElementById("balanceResult").innerHTML = "✅ Correction sent! Re-check to confirm.";
+  })
+  .catch(()=>{
+    alert("⚠️ Correction failed, check connection");
+  });
+}
+
+// set initial active mode UI highlight after page load
+document.addEventListener("DOMContentLoaded", () => {
+  // set default active button for inventory mode row
+  if(document.getElementById("btnIN")) document.getElementById("btnIN").classList.add("active");
+  // add enter key support on balance inputs
+  const balanceInput = document.getElementById("balanceBarcode");
+  const realQtyInput = document.getElementById("realQty");
+  if(balanceInput) {
+    balanceInput.addEventListener("keypress", (e) => { if(e.key === "Enter") checkBalance(); });
+  }
+  if(realQtyInput) {
+    realQtyInput.addEventListener("keypress", (e) => { if(e.key === "Enter") checkBalance(); });
+  }
+  // inventory page: send on enter in barcode field
+  const invBarcode = document.getElementById("barcode");
+  if(invBarcode) {
+    invBarcode.addEventListener("keypress", (e) => { if(e.key === "Enter") sendData(); });
+  }
+});
+</script>
+</body>
+</html>
