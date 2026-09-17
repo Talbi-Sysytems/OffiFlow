@@ -1,0 +1,21 @@
+{
+  "short_name": "OffiFlow",
+  "name": "OffiFlow Store Manager",
+  "icons": [
+    {
+      "src": "offiflow_192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "offiflow_512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#d4e9ff",
+  "theme_color": "#2b87e0",
+  "display": "standalone",
+  "orientation": "portrait"
+}

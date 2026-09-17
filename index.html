@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="logo.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>OffiFlow Store Manager</title>
+
+  <!-- PWA Manifest & Mobile Settings -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2b87e0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="OffiFlow">
+  <link rel="apple-touch-icon" href="logo.png">
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(145deg, #d4e9ff 0%, #b0d4f0 100%);
+      font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+      padding: 20px 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background: #ffffffF0;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 24px 22px;
+      border-radius: 36px;
+      max-width: 760px;
+      width: 100%;
+      margin: 0 auto;
+      box-shadow: 0 20px 35px -8px rgba(2, 80, 140, 0.25), 0 8px 12px -6px rgba(0, 35, 70, 0.1);
+      border: 1px solid #d9ecff;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    h2 {
+      font-weight: 600;
+      font-size: 1.6rem;
+      letter-spacing: -0.02em;
+      color: #0a4b7a;
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .menu-btn {
+      background: #2b87e0;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #135a9e;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      margin-top: 8px;
+      background: white;
+      min-width: 220px;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0,60,120,0.2);
+      border: 1px solid #bdd6ec;
+      z-index: 1000;
+      overflow: hidden;
+    }
+
+    .dropdown-content.show {
+      display: block;
+    }
+
+    .dropdown-content button {
+      width: 100%;
+      text-align: left;
+      padding: 12px 18px;
+      margin: 0;
+      border: none;
+      border-radius: 0;
+      background: white;
+      box-shadow: none;
+      border-bottom: 1px solid #e3f0fd;
+      color: #0a4b7a;
+      font-weight: 500;
+    }
+
+    .dropdown-content button:hover {
+      background: #e6f2ff;
+    }
+
+    input, select, button {
+      font-family: inherit;
+      border-radius: 48px;
+      border: 1.5px solid #c4dbf2;
+      outline: none;
+      font-size: 1rem;
+      transition: all 0.15s;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 14px 18px;
+      margin: 6px 0;
+      background: #f5faff;
+      border: 1.5px solid #bdd6ec;
+      color: #033b5e;
+      font-weight: 500;
+    }
+
+    button {
+      background: #ecf5fe;
+      border: 1.5px solid #b9d6f0;
+      color: #0f4570;
+      font-weight: 600;
+      padding: 14px 12px;
+      margin: 6px 0;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #c0d9ef;
+    }
+
+    button.primary-action {
+      background: #2b87e0;
+      border-color: #1a6ec4;
+      color: white;
+      box-shadow: 0 4px 0 #135a9e;
+      width: 100%;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .menu-block {
+      background: #eef7ff;
+      border: 2px solid #bdd6ec;
+      border-radius: 24px;
+      padding: 20px 12px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #c0d9ef;
+      transition: transform 0.1s, background 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .menu-block:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #c0d9ef;
+      background: #e0efff;
+    }
+
+    .menu-block .icon {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+    }
+
+    .menu-block .title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0a4b7a;
+    }
+
+    .menu-block .desc {
+      font-size: 0.8rem;
+      color: #4a7a9f;
+      margin-top: 4px;
+    }
+
+    .scanner-box {
+      width: 100%;
+      height: 240px;
+      display: none;
+      margin: 12px 0;
+      background: #d9e9fa;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 2px dashed #4895e6;
+    }
+
+    .hidden { display: none !important; }
+
+    .status-box {
+      margin-top: 14px;
+      padding: 12px 16px;
+      background: #e2f0fd;
+      border-radius: 20px;
+      color: #02457a;
+      font-weight: 500;
+      border-left: 6px solid #5fa7e6;
+      word-break: break-word;
+    }
+
+    .report-table-container {
+      overflow-x: auto;
+      margin-top: 16px;
+    }
+
+    table.inventory-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: left;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    table.inventory-table th {
+      background: #0a4b7a;
+      color: white;
+      padding: 10px;
+    }
+
+    table.inventory-table td {
+      padding: 10px;
+      border-bottom: 1px solid #e3f0fd;
+    }
+
+    .badge-neg { color: #d1453b; font-weight: bold; }
+    .badge-pos { color: #2e7d32; font-weight: bold; }
+    .badge-zero { color: #555; }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .card { box-shadow: none; border: none; max-width: 100%; padding: 0; }
+      .dropdown, button, .scanner-box, input, select, .menu-grid { display: none !important; }
+      .print-header { display: block !important; margin-bottom: 20px; }
+      table.inventory-table { font-size: 10pt; border: 1px solid #ccc; }
+      table.inventory-table th, table.inventory-table td { border: 1px solid #ccc; padding: 6px; }
+    }
+
+    .print-header { display: none; }
+  </style>
+</head>
+
+<body>
+
+<!-- LOGIN CARD -->
+<div class="card" id="loginPage">
+  <h2>☁️ OffiFlow Store</h2>
+  <div style="margin: 12px 0;"><span style="background: #cde3fe; padding:6px 16px; border-radius:40px; font-size: 0.9rem;">🔐 Staff Login</span></div>
+  <input id="staffNumber" placeholder="Staff Number" autocomplete="off">
+  <input id="password" type="password" placeholder="Password">
+  <button class="primary-action" onclick="login()">Login</button>
+  <div id="loginStatus" class="status-box" style="display:none;"></div>
+</div>
+
+<!-- HOME SCREEN CARD -->
+<div class="card hidden" id="homePage">
+  <div class="app-header">
+    <div>
+      <h2 id="welcomeText">👋 Welcome</h2>
+      <span style="font-size: 0.85rem; color: #3c7099;">Select an option below:</span>
+    </div>
+    <button onclick="logout()" style="padding: 8px 16px; margin:0;">🔒 Logout</button>
+  </div>
+
+  <div class="menu-grid">
+    <div class="menu-block" onclick="navigateTo('stockIn')">
+      <div class="icon">📥</div>
+      <div class="title">Stock In</div>
+      <div class="desc">Receive new items</div>
+    </div>
+
+    <div class="menu-block" onclick="navigateTo('stockOut')">
+      <div class="icon">📤</div>
+      <div class="title">Stock Out</div>
+      <div class="desc">Register sales/deliveries</div>
+    </div>
+
+    <div class="menu-block" onclick="navigateTo('audit')">
+      <div class="icon">🔢</div>
+      <div class="title">Audit / Count</div>
+      <div class="desc">Physical stock checks</div>
+    </div>
+
+    <div class="menu-block" onclick="navigateTo('writedown')">
+      <div class="icon">⚠️</div>
+      <div class="title">Write-Downs</div>
+      <div class="desc">Waste & damage removal</div>
+    </div>
+
+    <div class="menu-block" onclick="navigateTo('stockOverview')">
+      <div class="icon">📋</div>
+      <div class="title">Live Overview</div>
+      <div class="desc">View full inventory list</div>
+    </div>
+
+    <div class="menu-block" onclick="navigateTo('report')">
+      <div class="icon">📊</div>
+      <div class="title">Variance Report</div>
+      <div class="desc">Audit & write-down summary</div>
+    </div>
+  </div>
+</div>
+
+<!-- OPERATIONS CARD -->
+<div class="card hidden" id="operationsPage">
+  <div class="app-header">
+    <h2 id="pageTitle">📦 Operations</h2>
+    <div class="dropdown">
+      <button class="menu-btn" onclick="toggleDropdown(event)">☰ Menu</button>
+      <div class="dropdown-content">
+        <button onclick="navigateTo('home')">🏠 Home Menu</button>
+        <button onclick="navigateTo('stockIn')">📥 Stock In</button>
+        <button onclick="navigateTo('stockOut')">📤 Stock Out</button>
+        <button onclick="navigateTo('audit')">🔢 Audit / Count</button>
+        <button onclick="navigateTo('writedown')">⚠️ Write-Downs</button>
+        <button onclick="navigateTo('stockOverview')">📋 Live Overview</button>
+        <button onclick="navigateTo('report')">📊 Variance Report</button>
+        <button onclick="logout()">🔒 Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <button onclick="startScanner('scanner', 'barcode')" style="width:100%; background:#c1defa;">📷 Scan Barcode</button>
+  <div id="scanner" class="scanner-box"></div>
+
+  <input id="barcode" placeholder="Barcode / EAN" autocomplete="off" onchange="lookupBarcode(this.value)">
+  <input id="name" placeholder="Product Name" autocomplete="off">
+  
+  <div style="display: flex; gap: 8px;">
+    <input id="qty" type="number" value="1" min="0" placeholder="Quantity" style="flex:1;">
+    <input id="unitPrice" type="number" step="0.01" placeholder="Price (€)" style="flex:1;">
+  </div>
+  
+  <input id="expiryDate" placeholder="Expiry Date (D/M/YYYY)">
+
+  <div id="writeDownReasonDiv" class="hidden">
+    <select id="writeDownReason">
+      <option value="Expired">Reason: Expired</option>
+      <option value="Damaged">Reason: Damaged</option>
+      <option value="Lost/Disappeared">Reason: Lost / Disappeared (Odds)</option>
+    </select>
+  </div>
+
+  <button class="primary-action" onclick="sendData()">Submit Entry</button>
+  <button onclick="navigateTo('home')" style="width:100%; margin-top:4px;">⬅️ Back to Home</button>
+  
+  <div id="status" class="status-box" style="display:none;"></div>
+</div>
+
+<!-- LIVE OVERVIEW CARD -->
+<div class="card hidden" id="overviewPage">
+  <div class="app-header">
+    <h2>📋 Live Stock Overview</h2>
+    <div class="dropdown">
+      <button class="menu-btn" onclick="toggleDropdown(event)">☰ Menu</button>
+      <div class="dropdown-content">
+        <button onclick="navigateTo('home')">🏠 Home Menu</button>
+        <button onclick="navigateTo('stockIn')">📥 Stock In</button>
+        <button onclick="navigateTo('stockOut')">📤 Stock Out</button>
+        <button onclick="navigateTo('audit')">🔢 Audit / Count</button>
+        <button onclick="navigateTo('writedown')">⚠️ Write-Downs</button>
+        <button onclick="navigateTo('stockOverview')">📋 Live Overview</button>
+        <button onclick="navigateTo('report')">📊 Variance Report</button>
+        <button onclick="logout()">🔒 Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <input id="searchFilter" placeholder="🔍 Search by name or barcode..." onkeyup="filterStockTable()">
+  <button onclick="loadOverviewData()" style="width:100%;">🔄 Refresh Overview</button>
+
+  <div class="report-table-container">
+    <table class="inventory-table">
+      <thead>
+        <tr>
+          <th>Barcode</th>
+          <th>Name</th>
+          <th>Current Stock</th>
+          <th>Expiry</th>
+        </tr>
+      </thead>
+      <tbody id="stockTableBody">
+        <tr><td colspan="4" style="text-align:center;">Click Refresh to load data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <button onclick="navigateTo('home')" style="width:100%; margin-top:12px;">⬅️ Back to Home</button>
+</div>
+
+<!-- REPORT CARD -->
+<div class="card hidden" id="reportPage">
+  <div class="print-header">
+    <h2>OffiFlow Inventory Audit & Stock Variance Report</h2>
+    <p id="printDate"></p>
+  </div>
+
+  <div class="app-header">
+    <h2>📊 Stock Audit & Variance Report</h2>
+    <div class="dropdown">
+      <button class="menu-btn" onclick="toggleDropdown(event)">☰ Menu</button>
+      <div class="dropdown-content">
+        <button onclick="navigateTo('home')">🏠 Home Menu</button>
+        <button onclick="navigateTo('stockIn')">📥 Stock In</button>
+        <button onclick="navigateTo('stockOut')">📤 Stock Out</button>
+        <button onclick="navigateTo('audit')">🔢 Audit / Count</button>
+        <button onclick="navigateTo('writedown')">⚠️ Write-Downs</button>
+        <button onclick="navigateTo('stockOverview')">📋 Live Overview</button>
+        <button onclick="navigateTo('report')">📊 Variance Report</button>
+        <button onclick="logout()">🔒 Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <button onclick="generateReport()" class="primary-action">Generate Report</button>
+  <button onclick="window.print()" style="width:100%; margin-top:6px; background:#d4e4f7;">🖨️ Print / Save PDF</button>
+
+  <div class="report-table-container">
+    <table class="inventory-table">
+      <thead>
+        <tr>
+          <th>Barcode</th>
+          <th>Name</th>
+          <th>Current Stock</th>
+          <th>Last Count</th>
+          <th>Variance</th>
+          <th>Write-Downs</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="reportTableBody">
+        <tr><td colspan="7" style="text-align:center;">Click "Generate Report" to build summary.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <button onclick="navigateTo('home')" style="width:100%; margin-top:12px;">⬅️ Back to Home</button>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    const API_URL = "https://script.google.com/macros/s/AKfycbyC5ztqSNf9eylS4ZU7WMgyc8P-3Z5pRe48xlLHlEIiRIyGYNMTHbEuOQaR4EjXPNXM/exec";
+
+    const STAFF = [
+      { staffNumber: "4829", password: "8989" },
+      { staffNumber: "7361", password: "000" },
+      { staffNumber: "2905", password: "000" },
+      { staffNumber: "000", password: "000" }
+    ];
+
+    const loginPage = document.getElementById('loginPage');
+    const homePage = document.getElementById('homePage');
+    const operationsPage = document.getElementById('operationsPage');
+    const overviewPage = document.getElementById('overviewPage');
+    const reportPage = document.getElementById('reportPage');
+
+    const pageTitle = document.getElementById('pageTitle');
+    const barcodeInput = document.getElementById('barcode');
+    const nameInput = document.getElementById('name');
+    const qtyInput = document.getElementById('qty');
+    const priceInput = document.getElementById('unitPrice');
+    const expiryInput = document.getElementById('expiryDate');
+    const statusDiv = document.getElementById('status');
+    const writeDownDiv = document.getElementById('writeDownReasonDiv');
+
+    let currentMode = "IN";
+    let currentUser = "";
+    let html5QrcodeScanner = null;
+    let inventoryCache = [];
+
+    function cleanDate(d) {
+      if (!d || typeof d !== 'string' || d.trim() === '') return '';
+      let clean = d.split('T')[0];
+      if (clean.includes('-')) {
+        let parts = clean.split('-');
+        if (parts.length === 3) {
+          return `${parseInt(parts[2], 10)}/${parseInt(parts[1], 10)}/${parts[0]}`;
+        }
+      }
+      if (clean.includes('/')) {
+        let parts = clean.split('/');
+        if (parts.length === 3) {
+          return `${parseInt(parts[0], 10)}/${parseInt(parts[1], 10)}/${parts[2]}`;
+        }
+      }
+      return clean;
+    }
+
+    function playBeep() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = 880;
+        gain.gain.value = 0.2;
+        osc.start();
+        gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.15);
+        osc.stop(audioCtx.currentTime + 0.15);
+      } catch(e) {}
+    }
+
+    function showStatus(elem, msg) {
+      elem.innerText = msg;
+      elem.style.display = 'block';
+    }
+
+    window.toggleDropdown = function(e) {
+      e.stopPropagation();
+      const currentDropdown = e.target.nextElementSibling;
+      document.querySelectorAll('.dropdown-content').forEach(d => {
+        if (d !== currentDropdown) d.classList.remove('show');
+      });
+      if (currentDropdown) currentDropdown.classList.toggle('show');
+    };
+
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
+    });
+
+    window.navigateTo = function(page) {
+      stopScanner();
+      homePage.classList.add('hidden');
+      operationsPage.classList.add('hidden');
+      overviewPage.classList.add('hidden');
+      reportPage.classList.add('hidden');
+      statusDiv.style.display = 'none';
+
+      writeDownDiv.classList.add('hidden');
+
+      if (page === 'home') {
+        homePage.classList.remove('hidden');
+      } else if (page === 'stockIn') {
+        currentMode = 'IN';
+        pageTitle.innerText = "📥 Stock In (Receive)";
+        priceInput.style.display = 'block';
+        expiryInput.style.display = 'block';
+        operationsPage.classList.remove('hidden');
+      } else if (page === 'stockOut') {
+        currentMode = 'OUT';
+        pageTitle.innerText = "📤 Stock Out (Sale/Remove)";
+        priceInput.style.display = 'none';
+        expiryInput.style.display = 'none';
+        operationsPage.classList.remove('hidden');
+      } else if (page === 'audit') {
+        currentMode = 'COUNT';
+        pageTitle.innerText = "🔢 Stock Audit / Count";
+        priceInput.style.display = 'none';   
+        expiryInput.style.display = 'none';  
+        operationsPage.classList.remove('hidden');
+      } else if (page === 'writedown') {
+        currentMode = 'WRITEDOWN';
+        pageTitle.innerText = "⚠️ Stock Write-Down";
+        priceInput.style.display = 'none';
+        expiryInput.style.display = 'none';
+        writeDownDiv.classList.remove('hidden');
+        operationsPage.classList.remove('hidden');
+      } else if (page === 'stockOverview') {
+        overviewPage.classList.remove('hidden');
+        loadOverviewData();
+      } else if (page === 'report') {
+        reportPage.classList.remove('hidden');
+      }
+    };
+
+    window.login = function() {
+      const sn = document.getElementById('staffNumber').value.trim();
+      const pw = document.getElementById('password').value;
+      const staff = STAFF.find(s => s.staffNumber === sn && s.password === pw);
+
+      if (staff) {
+        currentUser = sn;
+        document.getElementById('welcomeText').innerText = `👋 Welcome, Staff #${sn}`;
+        loginPage.classList.add('hidden');
+        homePage.classList.remove('hidden');
+      } else {
+        showStatus(document.getElementById('loginStatus'), '❌ Invalid staff credentials');
+      }
+    };
+
+    window.logout = function() {
+      stopScanner();
+      homePage.classList.add('hidden');
+      operationsPage.classList.add('hidden');
+      overviewPage.classList.add('hidden');
+      reportPage.classList.add('hidden');
+      loginPage.classList.remove('hidden');
+      currentUser = "";
+    };
+
+    window.lookupBarcode = function(code) {
+      if (!code) return;
+      showStatus(statusDiv, '🔍 Searching Google Sheets...');
+      
+      fetch(API_URL + "?barcode=" + encodeURIComponent(code))
+        .then(r => r.json())
+        .then(data => {
+          if (data && data.found) {
+            nameInput.value = data.name || '';
+            if (data.expiryDate && currentMode === 'IN') {
+              expiryInput.value = cleanDate(data.expiryDate);
+            }
+            showStatus(statusDiv, `✓ Item Found. Current Stock: ${data.quantity}`);
+          } else {
+            showStatus(statusDiv, 'ℹ️ New Barcode - Enter item details below.');
+          }
+        })
+        .catch(() => showStatus(statusDiv, '⚠️ Error fetching barcode'));
+    };
+
+    window.startScanner = function(targetDivId, targetInputId) {
+      const targetDiv = document.getElementById(targetDivId);
+      targetDiv.style.display = 'block';
+      
+      if (!html5QrcodeScanner) {
+        html5QrcodeScanner = new Html5Qrcode(targetDivId);
+      }
+
+      html5QrcodeScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 220 },
+        (decodedText) => {
+          document.getElementById(targetInputId).value = decodedText;
+          playBeep();
+          stopScanner();
+          if (targetInputId === 'barcode') lookupBarcode(decodedText);
+        },
+        () => {}
+      ).catch(() => showStatus(statusDiv, 'Camera error'));
+    };
+
+    function stopScanner() {
+      if (html5QrcodeScanner) {
+        html5QrcodeScanner.stop().then(() => {
+          document.getElementById('scanner').style.display = 'none';
+          html5QrcodeScanner = null;
+        }).catch(() => {});
+      }
+    }
+
+    window.sendData = function() {
+      const bcode = barcodeInput.value.trim();
+      const pName = nameInput.value.trim();
+      const quantity = Number(qtyInput.value) || 0;
+      const price = currentMode === 'IN' ? (Number(priceInput.value) || 0) : 0;
+      const exp = currentMode === 'IN' ? cleanDate(expiryInput.value.trim()) : '';
+      const reason = document.getElementById('writeDownReason').value;
+
+      if (!bcode || !pName) {
+        showStatus(statusDiv, '⚠️ Barcode and Product Name required.');
+        return;
+      }
+
+      const payload = {
+        barcode: bcode,
+        name: pName,
+        quantity: quantity,
+        price: price,
+        action: currentMode,
+        reason: currentMode === 'WRITEDOWN' ? reason : '',
+        expiryDate: exp,
+        staff: currentUser
+      };
+
+      showStatus(statusDiv, '⏳ Saving transaction...');
+
+      fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      })
+      .then(r => r.json())
+      .then(data => {
+        let msg = '✅ Saved! Updated Stock: ' + (data.newQuantity !== undefined ? data.newQuantity : '');
+        if (data.variance !== undefined && currentMode === 'COUNT') {
+          msg += ` (Variance: ${data.variance > 0 ? '+' + data.variance : data.variance})`;
+        }
+        showStatus(statusDiv, msg);
+        barcodeInput.value = '';
+        nameInput.value = '';
+        expiryInput.value = '';
+        priceInput.value = '';
+        qtyInput.value = 1;
+      })
+      .catch(() => showStatus(statusDiv, '❌ Save failed.'));
+    };
+
+    window.loadOverviewData = function() {
+      const tbody = document.getElementById('stockTableBody');
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Loading...</td></tr>';
+
+      fetch(API_URL + "?all=true")
+        .then(r => r.json())
+        .then(data => {
+          if (!Array.isArray(data)) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No data found.</td></tr>';
+            return;
+          }
+          inventoryCache = data;
+          renderStockTable(data);
+        })
+        .catch(() => {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Failed to load.</td></tr>';
+        });
+    };
+
+    function renderStockTable(items) {
+      const tbody = document.getElementById('stockTableBody');
+      if (items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No items.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = items.map(item => `
+        <tr>
+          <td>${item.barcode}</td>
+          <td><b>${item.name || 'Unnamed'}</b></td>
+          <td>${item.quantity}</td>
+          <td>${cleanDate(item.expiryDate) || '—'}</td>
+        </tr>
+      `).join('');
+    }
+
+    window.filterStockTable = function() {
+      const term = document.getElementById('searchFilter').value.toLowerCase();
+      const filtered = inventoryCache.filter(i => 
+        (i.name && i.name.toLowerCase().includes(term)) || 
+        (i.barcode && i.barcode.toString().includes(term))
+      );
+      renderStockTable(filtered);
+    };
+
+    window.generateReport = function() {
+      const tbody = document.getElementById('reportTableBody');
+      document.getElementById('printDate').innerText = "Report Generated: " + new Date().toLocaleString();
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Loading report...</td></tr>';
+
+      fetch(API_URL + "?all=true")
+        .then(r => r.json())
+        .then(data => {
+          if (!Array.isArray(data) || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No records available.</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = data.map(item => {
+            const currentStock = Number(item.quantity) || 0;
+            const lastCount = item.lastCount !== undefined ? Number(item.lastCount) : currentStock;
+            const variance = item.variance !== undefined ? Number(item.variance) : 0;
+            const writeDowns = Number(item.totalWriteDowns) || 0;
+
+            let badgeClass = 'badge-zero';
+            let statusText = 'Matched';
+
+            if (variance < 0) {
+              badgeClass = 'badge-neg';
+              statusText = 'Shortage';
+            } else if (variance > 0) {
+              badgeClass = 'badge-pos';
+              statusText = 'Surplus';
+            }
+
+            return `
+              <tr>
+                <td>${item.barcode}</td>
+                <td><b>${item.name || 'Unnamed'}</b></td>
+                <td>${currentStock}</td>
+                <td>${lastCount}</td>
+                <td class="${badgeClass}">${variance > 0 ? '+' + variance : variance}</td>
+                <td>${writeDowns > 0 ? writeDowns : 0}</td>
+                <td class="${badgeClass}">${statusText}</td>
+              </tr>
+            `;
+          }).join('');
+        })
+        .catch(() => {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Error compiling report.</td></tr>';
+        });
+    };
+
+    document.getElementById('staffNumber').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+    document.getElementById('password').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+
+  })();
+</script>
+
+<!-- Register Service Worker for PWA -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(() => console.log('PWA Service Worker Registered'))
+        .catch(err => console.log('Service Worker Registration Failed:', err));
+    });
+  }
+</script>
+
+</body>
+</html>
